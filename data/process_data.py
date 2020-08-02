@@ -38,8 +38,8 @@ def clean_data(df):
             df.drop(index_, inplace = True)
     for category in categories:
         if df[category].unique().sum() < 1:
-            print('column has no "True" or 1 label: "'+ category + '" this column will be dropped')
-            df.drop([category], axis = 1, inplace=True)
+            print('column has no "True" or 1 label: "'+ category + '" this column can be dropped')
+            #df.drop([category], axis = 1, inplace=True)
     return df
 
 def save_data(df, database_filename):
