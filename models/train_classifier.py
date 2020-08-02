@@ -109,7 +109,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     print('Classification report: ',x)
 
     confusion_mat = multilabel_confusion_matrix(y_test, y_pred)
-    for matrix in tuple(zip(categories, confusion_mat)):
+    for matrix in tuple(zip( category_names, confusion_mat)):
         print(matrix)
 
     fig, ax = plt.subplots(7, 5, figsize=(20, 20))    
