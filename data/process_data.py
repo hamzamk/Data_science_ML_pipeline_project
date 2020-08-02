@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import sqlite3
 from sqlalchemy import create_engine
-
 import sys
 import pandas as pd
 import numpy as np
@@ -38,7 +37,7 @@ def clean_data(df):
             df.drop(index_, inplace = True)
     for category in categories:
         if df[category].unique().sum() < 1:
-            print('column has no "True" or 1 label: "'+ category + '" this column can be dropped')
+            print('column of class ' + category + 'has no "True" or 1 label' + ' this column can be dropped')
             #df.drop([category], axis = 1, inplace=True)
     return df
 
