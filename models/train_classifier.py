@@ -112,15 +112,15 @@ def evaluate_model(model, X_test, Y_test, category_names):
     for matrix in tuple(zip( category_names, confusion_mat)):
         print(matrix)
 
-    fig, ax = plt.subplots(7, 5, figsize=(20, 20))    
-    for axes, cfs_matrix, label in zip(ax.flatten(), confusion_mat, category_names):
-        print_confusion_matrix(cfs_matrix, axes, label, ["Y", "N"])
-
-    fig.tight_layout()
-    plt.show()
+    x = input('visualize confusion matrix? if there is no GUI then type "no" else "yes" ')
     
-
-
+    if x == 'yes':
+        fig, ax = plt.subplots(7, 5, figsize=(20, 20))    
+        for axes, cfs_matrix, label in zip(ax.flatten(), confusion_mat, category_names):
+            print_confusion_matrix(cfs_matrix, axes, label, ["Y", "N"])
+        fig.tight_layout()
+        plt.show()
+    
 
 def save_model(model, model_filepath):
     # Open the file to save as pkl file
