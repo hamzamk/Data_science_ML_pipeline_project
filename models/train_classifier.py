@@ -18,6 +18,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.model_selection import GridSearchCV
 from sklearn import metrics
 from sqlalchemy import create_engine
 from sklearn.model_selection import train_test_split
@@ -25,17 +26,27 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score
 import seaborn as sns
 from numpy import argmax
-from sklearn.metrics import multilabel_confusion_matrix
+from sklearn.decomposition import TruncatedSVD
 import matplotlib.pyplot as plt
 import pickle
+
+try:
+    from sklearn.metrics import multilabel_confusion_matrix
+except ImportError:
+    os.system('pip install -U scikit-learn')
+finally:
+    from sklearn.metrics import multilabel_confusion_matrix
+
+
+
 
 
 
 def load_data(database_filepath):
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('DisasterResponse', engine)
-    categories = df.iloc[:, 4:].columns
-    X, Y = df.message, df.iloc[:,4:]
+    categories = df.iloc[:, 6:].columns
+    X, Y = df.message, df.iloc[:,6:]
     return X, Y, categories
 
 
@@ -58,9 +69,20 @@ def build_model():
     pipeline = Pipeline([
     ('vect', CountVectorizer(tokenizer=tokenize)),
     ('tfidf', TfidfTransformer()),
+    ('svd', TruncatedSVD()),
     ('clf', MultiOutputClassifier(RandomForestClassifier())),
 ])
-    return pipeline
+
+    parameters = {#best parameters estimated using gridsearch
+    #    'tfidf__use_idf': (True, False), 
+    #     'clf__estimator__n_estimators': [50, 100],
+    #     'clf__estimator__min_samples_split': [2, 3, 4],
+    'vect__max_df': [0.5],
+    'vect__max_features': [5000],
+    'vect__ngram_range': [(1, 2)],
+    }
+    grid = GridSearchCV(pipeline, cv=2, param_grid=parameters)
+    return grid
 
 def print_confusion_matrix(confusion_matrix, axes, class_label, class_names, fontsize=14):
 
@@ -87,8 +109,11 @@ def evaluate_model(model, X_test, Y_test, category_names):
     print('Classification report: ',x)
 
     confusion_mat = multilabel_confusion_matrix(y_test, y_pred)
+    for matrix in tuple(zip(categories, confusion_mat)):
+        print(matrix)
+
     fig, ax = plt.subplots(7, 5, figsize=(20, 20))    
-    for axes, cfs_matrix, label in zip(ax.flatten(), confusion_mat, categories):
+    for axes, cfs_matrix, label in zip(ax.flatten(), confusion_mat, category_names):
         print_confusion_matrix(cfs_matrix, axes, label, ["Y", "N"])
 
     fig.tight_layout()
@@ -103,8 +128,6 @@ def save_model(model, model_filepath):
     pickle.dump(model, classifier)
     # Close the pickle instances
     classifier.close()
-
-
 
 
 def main():
