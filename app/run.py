@@ -8,7 +8,8 @@ from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
 from sqlalchemy import create_engine
-
+import re
+import string
 try:
     from sklearn.externals import joblib
 except ImportError:
@@ -21,18 +22,22 @@ finally:
 app = Flask(__name__)
 
 def tokenize(text):
-    tokens = word_tokenize(text)
+    url_regex = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    text = re.sub(url_regex, "", text).lower().split()
+    table = str.maketrans('', '', string.punctuation)
+    stripped = [w.translate(table) for w in text]
+    tokens = word_tokenize(' '.join(stripped))
     lemmatizer = WordNetLemmatizer()
 
     clean_tokens = []
     for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
+        clean_tok = lemmatizer.lemmatize(tok)
         clean_tokens.append(clean_tok)
-
-    return clean_tokens
+        return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/DisasterResponse.db')
+path = '..//data//DisasterResponse.db'
+engine = create_engine('sqlite:///' + path)
 df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
@@ -99,8 +104,8 @@ def go():
 
 
 def main():
-    app.run(host='0.0.0.0', port=3001, debug=True)
-
+    app.run(host='127.0.0.1', port=3000, debug=True)
+    tokenize(text)
 
 if __name__ == '__main__':
     main()

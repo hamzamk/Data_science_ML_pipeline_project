@@ -26,7 +26,7 @@ def clean_data(df):
         categories[column] =  categories[column].str[-1]
     # convert column from string to numeric
         categories[column] = pd.to_numeric(categories[column])
-    df = df.drop(['categories'], axis=1)
+    df = df.drop(['categories', 'Unnamed: 0_y', 'Unnamed: 0_x'], axis=1)
     df =  pd.concat([df, categories], axis=1)
     df.duplicated(subset=None, keep='first').sum()
     df = df.drop_duplicates()

@@ -39,14 +39,11 @@ finally:
 
 
 
-
-
-
 def load_data(database_filepath):
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('DisasterResponse', engine)
-    categories = df.iloc[:, 6:].columns
-    X, Y = df.message, df.iloc[:,6:]
+    categories = df.iloc[:, 4:].columns
+    X, Y = df.message, df.iloc[:,4:]
     return X, Y, categories
 
 
@@ -112,7 +109,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     for matrix in tuple(zip( category_names, confusion_mat)):
         print(matrix)
 
-    x = input('visualize confusion matrix? if there is no GUI then type "no" else "yes" ')
+    x = input('visualize confusion matrix? if there is no GUI then skip else type "yes" ')
     
     if x == 'yes':
         fig, ax = plt.subplots(7, 5, figsize=(20, 20))    
@@ -135,7 +132,7 @@ def main():
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2,random_state=42)
         
         print('Building model...')
         model = build_model()
