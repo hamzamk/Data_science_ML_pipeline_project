@@ -17,6 +17,9 @@ def load_data(messages_filepath, categories_filepath):
     return df
 
 def clean_data(df):
+    '''
+    There are rows which have all false values and do not add any meaningful information to the model and hence are removed. Similarly Child-alone class has no true labels and is recommended to be removed but kept.
+    '''
     categories = df['categories'].str.split(';', expand = True)
     row = categories.iloc[0]
     category_colnames = row.apply(lambda x: x[0:-2])

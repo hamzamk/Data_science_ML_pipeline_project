@@ -1,3 +1,9 @@
+'''
+This file requires sklearn 0.23.1 and the correct version will be automatically installed if the necessary method can't be imported. The best parameters for the model are selected as a result of a grid search hence the search algorithm will not be rerun. 
+
+'''
+
+
 import os
 import nltk
 nltk.download(['punkt', 'wordnet', 'stopwords'])
@@ -48,6 +54,9 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    '''
+    Cleans URLs, punctuation, normalized text, creates tokens and lemmatize text
+    '''
     url_regex = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     text = re.sub(url_regex, "", text).lower().split()
     table = str.maketrans('', '', string.punctuation)
@@ -99,6 +108,9 @@ def print_confusion_matrix(confusion_matrix, axes, class_label, class_names, fon
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    The classification report only shows two classes as 1 and 0 which are indicating boolean True and False for the labels. The metrics showcase how predicted labels match with the true labels. The summary of each class against another is depicted inthe confusion matrix which can be ploted or viewed in the terminal/command prompt
+     '''
     y_pred = model.predict(X_test)
     y_test = np.array(Y_test)
 
