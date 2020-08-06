@@ -18,7 +18,6 @@ finally:
     import joblib
 
 
-
 app = Flask(__name__)
 
 def tokenize(text):
