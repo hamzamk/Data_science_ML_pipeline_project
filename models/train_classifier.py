@@ -36,13 +36,13 @@ from sklearn.decomposition import TruncatedSVD
 import matplotlib.pyplot as plt
 import pickle
 
+# multilabel_confusion_matrix is not present in scikit-learn version < 0.23.1
 try:
     from sklearn.metrics import multilabel_confusion_matrix
 except ImportError:
     os.system('pip install -U scikit-learn')
 finally:
     from sklearn.metrics import multilabel_confusion_matrix
-
 
 def load_data(database_filepath):
     engine = create_engine('sqlite:///' + database_filepath)
@@ -77,8 +77,8 @@ def build_model():
     ('svd', TruncatedSVD()),
     ('clf', MultiOutputClassifier(RandomForestClassifier())),
 ])
-
-    parameters = {#best parameters estimated using gridsearch
+    # best parameters estimated using gridsearch
+    parameters = {
     #    'tfidf__use_idf': (True, False), 
     #     'clf__estimator__n_estimators': [50, 100],
     #     'clf__estimator__min_samples_split': [2, 3, 4],
@@ -119,7 +119,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     for matrix in tuple(zip( category_names, confusion_mat)):
         print(matrix)
 
-    x = input('visualize confusion matrix? if there is no GUI then skip else type "yes" ')
+    x = input('visualize confusion matrix? if there is no GUI then skip, else type "yes" ')
     
     if x == 'yes':
         fig, ax = plt.subplots(7, 5, figsize=(20, 20))    

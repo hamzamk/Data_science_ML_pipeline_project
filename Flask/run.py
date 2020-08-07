@@ -6,12 +6,24 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from flask import Flask
 from flask import render_template, request, jsonify
+from plotly.graph_objs import Bar
 from sqlalchemy import create_engine
-import string
-import re
-import joblib
+
+try:
+    from sklearn.externals import joblib
+except ImportError:
+    os.system("pip install joblib")
+finally:
+    import joblib
+
+
+
+app = Flask(__name__)
 
 def tokenize(text):
+    '''
+    Cleans URLs, punctuation, normalized text, creates tokens and lemmatize text
+    '''
     url_regex = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     text = re.sub(url_regex, "", text).lower().split()
     table = str.maketrans('', '', string.punctuation)
@@ -23,11 +35,11 @@ def tokenize(text):
     for tok in tokens:
         clean_tok = lemmatizer.lemmatize(tok)
         clean_tokens.append(clean_tok)
-        return clean_tokens
+
+    return clean_tokens
 
 # load data
-path = '..//data//DisasterResponse.db'
-engine = create_engine('sqlite:///' + path)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
@@ -35,7 +47,7 @@ model = joblib.load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
-@app.route('/hello,m')
+@app.route('/')
 @app.route('/index')
 def index():
     
@@ -92,23 +104,10 @@ def go():
         classification_result=classification_results
     )
 
-app = Flask(__name__)
-@app.route('/hello', methods=['POST'])
-def hello():
-    message = request.get_json(force=True)
-    name = message['name']
-    response = {
-        'greeting':'Hello, ' + name + '!'
-
-    }
-
-    return jsonify(response)
-    
 
 def main():
-    app.run(host='0.0.0.0', port=3000, debug=True)
-    
+    app.run(host='0.0.0.0', port=3001, debug=True)
+
 
 if __name__ == '__main__':
     main()
-
