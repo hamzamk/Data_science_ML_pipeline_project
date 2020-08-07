@@ -8,8 +8,7 @@ from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
 from sqlalchemy import create_engine
-import re
-import string
+
 try:
     from sklearn.externals import joblib
 except ImportError:
@@ -18,9 +17,13 @@ finally:
     import joblib
 
 
+
 app = Flask(__name__)
 
 def tokenize(text):
+    '''
+    Cleans URLs, punctuation, normalized text, creates tokens and lemmatize text
+    '''
     url_regex = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     text = re.sub(url_regex, "", text).lower().split()
     table = str.maketrans('', '', string.punctuation)
@@ -32,11 +35,11 @@ def tokenize(text):
     for tok in tokens:
         clean_tok = lemmatizer.lemmatize(tok)
         clean_tokens.append(clean_tok)
-        return clean_tokens
+
+    return clean_tokens
 
 # load data
-path = '..//data//DisasterResponse.db'
-engine = create_engine('sqlite:///' + path)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
@@ -103,8 +106,8 @@ def go():
 
 
 def main():
-    app.run(host='127.0.0.1', port=3000, debug=True)
-    tokenize(text)
+    app.run(host='127.0.0.1', port=3001, debug=True)
+
 
 if __name__ == '__main__':
     main()
