@@ -105,7 +105,6 @@ def print_confusion_matrix(confusion_matrix, axes, class_label, class_names, fon
     axes.set_title("Class - " + class_label)
 
 
-
 def evaluate_model(model, X_test, Y_test, category_names):
     '''
     The classification report only shows two classes as 1 and 0 which are indicating boolean True and False for the labels. The metrics showcase how predicted labels match with the true labels. The summary of each class against another is depicted inthe confusion matrix which can be ploted or viewed in the terminal/command prompt
